@@ -83,7 +83,10 @@ a {
 }
 
 .back-to-top > img {
-  width: 100%;
+  position: absolute;
+  left: 25%;
+  bottom: 25%;
+  width: 50%;
   height: 50%;
 }
 
