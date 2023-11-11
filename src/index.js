@@ -9,31 +9,17 @@ const searchInput = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
 
 const pagination = document.querySelector(".pagination");
-pagination.style.display = "none";
 
 const prev = document.querySelector('.prev');
-prev.style.backgroundColor = "lightskyblue";
-prev.style.color = "white";
-prev.style.border = "none";
-prev.style.borderRadius = "50%";
-prev.style.width = "32px";
-prev.style.height = "32px";
 
 const next = document.querySelector('.next');
-next.style.backgroundColor = "lightskyblue";
-next.style.color = "white";
-next.style.border = "none";
-next.style.borderRadius = "50%";
-next.style.width = "32px";
-next.style.height = "32px";
 
 const bthNum = document.querySelector('.buttons-number');
-bthNum.style.margin = "8px";
 
 const backToTop = document.querySelector('.back-to-top');
 backToTop.hidden = true;
 
-const countPage = 40;
+let countPage = 40;
 let page = 1;
 let maxPages = page;
 let messEndSearchResult = false;
@@ -158,19 +144,18 @@ const renderButtons = items => {
 
     arrayButtons.forEach(pageNumber => {
         const button = document.createElement("button");
-        button.style.backgroundColor = "lightskyblue";
-        button.style.color = "white";
-        button.style.border = "none";
-        button.style.borderRadius = "50%";
-        button.style.width = "32px";
-        button.style.height = "32px";
+        button.classList.add("bth-num")
         button.textContent = pageNumber;
 
         button.addEventListener("click", () => {
-            page = pageNumber;
+            countPage = pageNumber * 40 - gallery.childElementCount;
+            console.log(countPage);
+
             getImages()
                 .then(response => render(response.data))
                 .catch(error => getError(error));
+            
+            countPage = 40;
         });
 
         bthNum.appendChild(button);
@@ -185,14 +170,10 @@ prev.addEventListener("click", () => {
             .then(response => render(response.data))
             .catch(error => getError(error));
     } else {
-        if (!messEndSearchResult) {
-            messEndSearchResult = true;
-
-            Notiflix.Notify.info("You're at the beginning of the search results.");
-
-            prev.style.display = "none";
-        }
-    }
+        Notiflix.Notify.info("You're at the beginning of the search results.");
+        
+        prev.style.display = "none"; 
+    };
 });
 
 next.addEventListener("click", () => {

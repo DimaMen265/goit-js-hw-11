@@ -69,6 +69,41 @@ a {
   flex-direction: column;
 }
 
+.pagination {
+  display: none;
+}
+
+.prev {
+  background-color: lightskyblue;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.next {
+  background-color: lightskyblue;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.buttons-number {
+  margin: 8px;
+}
+
+.bth-num {
+  background-color: lightskyblue;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
 .back-to-top {
   width: 50px;
   height: 50px;
