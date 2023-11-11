@@ -3,11 +3,50 @@ import Notiflix from "notiflix";
 import throttle from "lodash.throttle";
 
 import simpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css"
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+import Swiper from "swiper";
+import "swiper/swiper-bundle.css"
 
 const form = document.querySelector('#search-form');
 const searchInput = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
+
+const moreItems = document.querySelector('.more-items');
+moreItems.style.backgroundColor = 'lightskyblue';
+moreItems.style.color = 'white';
+moreItems.style.border = 'none';
+moreItems.style.borderRadius = '4px';
+moreItems.style.padding = '4px 8px';
+moreItems.style.display = 'none';
+
+const doublePrev = document.querySelector('.double-prev');
+doublePrev.style.backgroundColor = 'lightskyblue';
+doublePrev.style.color = 'white';
+doublePrev.style.border = 'none';
+doublePrev.style.borderRadius = '4px';
+doublePrev.style.padding = '4px 8px';
+
+const prev = document.querySelector('.prev');
+prev.style.backgroundColor = 'lightskyblue';
+prev.style.color = 'white';
+prev.style.border = 'none';
+prev.style.borderRadius = '4px';
+prev.style.padding = '4px 8px';
+
+const next = document.querySelector('.next');
+next.style.backgroundColor = 'lightskyblue';
+next.style.color = 'white';
+next.style.border = 'none';
+next.style.borderRadius = '4px';
+next.style.padding = '4px 8px';
+
+const doubleNext = document.querySelector('.double-next');
+doubleNext.style.backgroundColor = 'lightskyblue';
+doubleNext.style.color = 'white';
+doubleNext.style.border = 'none';
+doubleNext.style.borderRadius = '4px';
+doubleNext.style.padding = '4px 8px';
 
 const backToTop = document.querySelector(".back-to-top");
 backToTop.hidden = true;
@@ -87,6 +126,9 @@ const render = items => {
 
         lightbox.refresh();
     };
+
+    moreItems.style.display = 'block';
+    moreItems.style.margin = '0 auto 16px';
 };
 
 const removeChildren = container => {
@@ -97,50 +139,44 @@ const removeChildren = container => {
 
 const getError = error => {
     error = Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+    
+    moreItems.style.display = 'none';
 };
 
-const scrollingUpdating = () => {
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
-    const scrollPosition = window.scrollY;
+moreItems.addEventListener("click", () => {
+    if (maxPages > page) {
+        page += 1;
 
-    if (documentHeight - (windowHeight + scrollPosition) <= 100) {
-        if (maxPages > page) {
-            page += 1;
+        getImages()
+            .then(responce => render(responce.data))
+            .catch(error => getError(error));
+    } else {
+        if (!messEndSearchResult) {
+            messEndSearchResult = true;
 
-            getImages()
-                .then(responce => render(responce.data))
-                .catch(error => getError(error));
-        } else {
-            if (!messEndSearchResult) {
-                messEndSearchResult = true;
+            Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-                Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-            };
+            moreItems.style.display = 'none';
         };
     };
-    
-    if (document.documentElement.clientHeight < document.documentElement.scrollTop) {
-        backToTop.hidden = false;
-    } else {
-        backToTop.hidden = true;
-    };
-};
-
-const throttledScrolling = throttle(() => {
-    scrollingUpdating();
-}, 1000);
-
-document.addEventListener("scroll", () => {
-    throttledScrolling();
 });
 
-backToTop.addEventListener("click", () => {
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth",
+(() => {
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > window.innerHeight) {
+            backToTop.hidden = false;
+        } else {
+            backToTop.hidden = true;
+        };
     });
-});
+
+    backToTop.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    });
+})();
 
 const getImages = async () => {
     const paramsObject = {

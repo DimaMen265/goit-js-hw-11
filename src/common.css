@@ -1,5 +1,5 @@
 body {
-  padding: 0;
+  padding: 0 0 16px;
   margin: 0;
 }
 
@@ -67,6 +67,12 @@ a {
 .info-item {
   display: flex;
   flex-direction: column;
+}
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .back-to-top {
