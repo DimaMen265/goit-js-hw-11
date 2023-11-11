@@ -1,54 +1,36 @@
 import axios from "axios";
 import Notiflix from "notiflix";
-import throttle from "lodash.throttle";
 
 import simpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
-
-import Swiper from "swiper";
-import "swiper/swiper-bundle.css"
 
 const form = document.querySelector('#search-form');
 const searchInput = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
 
-const moreItems = document.querySelector('.more-items');
-moreItems.style.backgroundColor = 'lightskyblue';
-moreItems.style.color = 'white';
-moreItems.style.border = 'none';
-moreItems.style.borderRadius = '4px';
-moreItems.style.padding = '4px 8px';
-moreItems.style.display = 'none';
-
-const doublePrev = document.querySelector('.double-prev');
-doublePrev.style.backgroundColor = 'lightskyblue';
-doublePrev.style.color = 'white';
-doublePrev.style.border = 'none';
-doublePrev.style.borderRadius = '4px';
-doublePrev.style.padding = '4px 8px';
+const pagination = document.querySelector(".pagination");
+pagination.style.display = "none";
 
 const prev = document.querySelector('.prev');
-prev.style.backgroundColor = 'lightskyblue';
-prev.style.color = 'white';
-prev.style.border = 'none';
-prev.style.borderRadius = '4px';
-prev.style.padding = '4px 8px';
+prev.style.backgroundColor = "lightskyblue";
+prev.style.color = "white";
+prev.style.border = "none";
+prev.style.borderRadius = "50%";
+prev.style.width = "32px";
+prev.style.height = "32px";
 
 const next = document.querySelector('.next');
-next.style.backgroundColor = 'lightskyblue';
-next.style.color = 'white';
-next.style.border = 'none';
-next.style.borderRadius = '4px';
-next.style.padding = '4px 8px';
+next.style.backgroundColor = "lightskyblue";
+next.style.color = "white";
+next.style.border = "none";
+next.style.borderRadius = "50%";
+next.style.width = "32px";
+next.style.height = "32px";
 
-const doubleNext = document.querySelector('.double-next');
-doubleNext.style.backgroundColor = 'lightskyblue';
-doubleNext.style.color = 'white';
-doubleNext.style.border = 'none';
-doubleNext.style.borderRadius = '4px';
-doubleNext.style.padding = '4px 8px';
+const bthNum = document.querySelector('.buttons-number');
+bthNum.style.margin = "8px";
 
-const backToTop = document.querySelector(".back-to-top");
+const backToTop = document.querySelector('.back-to-top');
 backToTop.hidden = true;
 
 const countPage = 40;
@@ -69,6 +51,22 @@ const optionsGallery = {
 
 const lightbox = new simpleLightbox(".gallery a", optionsGallery);
 
+const getImages = async () => {
+    const paramsObject = {
+        key: "40222608-3820d97c8748fab8cb367624f",
+        q: searchInput.value.trim(),
+        image_type: "photo",
+        orientation: "horizontal",
+        safesearch: true,
+        per_page: countPage,
+        page: page,
+    };
+
+    const params = new URLSearchParams(paramsObject);
+
+    return await axios.get(`https://pixabay.com/api/?${params}`);
+};
+
 form.addEventListener("submit", event => {
     event.preventDefault();
 
@@ -80,10 +78,10 @@ form.addEventListener("submit", event => {
     if (searchInput.value.trim().length === 0) {
         Notiflix.Notify.failure("The search field must be filled!");
         return;
-    };
+    }
 
     getImages()
-        .then(responce => render(responce.data))
+        .then(response => render(response.data))
         .catch(error => getError(error));
 });
 
@@ -92,7 +90,7 @@ const render = items => {
 
     if (items.hits.length === 0) {
         return getError(error);
-    };
+    }
 
     Notiflix.Notify.success(`Hooray! We found ${items.totalHits} images.`);
 
@@ -121,34 +119,88 @@ const render = items => {
                 </div>
                 </a>`;
             }).join("");
-        
+
         gallery.insertAdjacentHTML("beforeend", markup);
 
         lightbox.refresh();
-    };
 
-    moreItems.style.display = 'block';
-    moreItems.style.margin = '0 auto 16px';
+        renderButtons(items);
+    }
+
+    pagination.style.display = "flex";
+    pagination.style.flexDirection = "row";
+    pagination.style.justifyContent = "center";
+    pagination.style.alignItems = "center";
 };
 
 const removeChildren = container => {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
-    };
+  }
 };
 
 const getError = error => {
     error = Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-    
-    moreItems.style.display = 'none';
+
+    pagination.style.display = "none";
 };
 
-moreItems.addEventListener("click", () => {
+const renderButtons = items => {
+    maxPages = Math.ceil(items.totalHits / countPage);
+
+    let arrayButtons = [];
+
+    for (let i = 0; i < maxPages; i += 1) {
+        arrayButtons.push(i + 1);
+    }
+
+    bthNum.innerHTML = "";
+
+    arrayButtons.forEach(pageNumber => {
+        const button = document.createElement("button");
+        button.style.backgroundColor = "lightskyblue";
+        button.style.color = "white";
+        button.style.border = "none";
+        button.style.borderRadius = "50%";
+        button.style.width = "32px";
+        button.style.height = "32px";
+        button.textContent = pageNumber;
+
+        button.addEventListener("click", () => {
+            page = pageNumber;
+            getImages()
+                .then(response => render(response.data))
+                .catch(error => getError(error));
+        });
+
+        bthNum.appendChild(button);
+    });
+};
+
+prev.addEventListener("click", () => {
+    if (page > 1) {
+        page -= 1;
+
+        getImages()
+            .then(response => render(response.data))
+            .catch(error => getError(error));
+    } else {
+        if (!messEndSearchResult) {
+            messEndSearchResult = true;
+
+            Notiflix.Notify.info("You're at the beginning of the search results.");
+
+            prev.style.display = "none";
+        }
+    }
+});
+
+next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
 
         getImages()
-            .then(responce => render(responce.data))
+            .then(response => render(response.data))
             .catch(error => getError(error));
     } else {
         if (!messEndSearchResult) {
@@ -156,9 +208,9 @@ moreItems.addEventListener("click", () => {
 
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-            moreItems.style.display = 'none';
-        };
-    };
+            next.style.display = "none";
+        }
+    }
 });
 
 (() => {
@@ -167,7 +219,7 @@ moreItems.addEventListener("click", () => {
             backToTop.hidden = false;
         } else {
             backToTop.hidden = true;
-        };
+        }
     });
 
     backToTop.addEventListener("click", () => {
@@ -177,19 +229,3 @@ moreItems.addEventListener("click", () => {
         });
     });
 })();
-
-const getImages = async () => {
-    const paramsObject = {
-        key: "40222608-3820d97c8748fab8cb367624f",
-        q: searchInput.value.trim(),
-        image_type: "photo",
-        orientation: "horizontal",
-        safesearch: true,
-        per_page: countPage,
-        page: page,
-    };
-
-    const params = new URLSearchParams(paramsObject);
-
-    return await axios.get(`https://pixabay.com/api/?${params}`);
-};
