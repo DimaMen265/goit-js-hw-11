@@ -15,8 +15,6 @@ const prev = document.querySelector('.prev');
 
 const next = document.querySelector('.next');
 
-const bthNum = document.querySelector('.buttons-number');
-
 const backToTop = document.querySelector('.back-to-top');
 backToTop.hidden = true;
 
@@ -57,7 +55,7 @@ const getImages = async () => {
 form.addEventListener("submit", event => {
     event.preventDefault();
 
-    removeChildren(gallery);
+    removeChildren(gallery, event.totalHits);
 
     page = 1;
     messEndSearchResult = false;
@@ -110,17 +108,20 @@ const render = items => {
         gallery.insertAdjacentHTML("beforeend", markup);
 
         lightbox.refresh();
-
-        // renderButtons(items);
     }
 
     pagination.classList.remove("visually-hidden");
 };
 
-const removeChildren = container => {
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
+const removeChildren = (container, count) => {
+    for (let i = 0; i < count; i += 1) {
+        container.lastElementChild.remove();
   }
+};
+
+const removeFirstNChildren = (container, count) => {
+    const children = Array.from(container.querySelectorAll(".photo-card")).slice(0, count);
+    children.forEach(child => container.removeChild(child));
 };
 
 const getError = error => {
@@ -129,45 +130,15 @@ const getError = error => {
     pagination.classList.add("visually-hidden")
 };
 
-// const renderButtons = items => {
-//     maxPages = Math.ceil(items.totalHits / countPage);
-
-//     let arrayButtons = [];
-
-//     for (let i = 0; i < maxPages; i += 1) {
-//         arrayButtons.push(i + 1);
-//     }
-
-//     bthNum.innerHTML = "";
-
-//     arrayButtons.forEach(pageNumber => {
-//         const button = document.createElement("button");
-//         button.classList.add("bth-num")
-//         button.textContent = pageNumber;
-
-//         button.addEventListener("click", () => {
-//             page = pageNumber;
-
-//             countPage = page * 40 - gallery.childElementCount;
-
-//             getImages()
-//                 .then(response => render(response.data))
-//                 .catch(error => getError(error));
-            
-//             countPage = 40;
-//         });
-
-//         bthNum.appendChild(button);
-//     });
-// };
-
 prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
 
-        for (let i = 0; i < countPage; i += 1) {
-            gallery.lastElementChild.remove();
-        };
+        removeFirstNChildren(gallery, countPage);
+
+        getImages()
+            .then(response => render(response.data))
+            .catch(error => getError(error));
 
         lightbox.refresh();
     } else {
@@ -183,9 +154,13 @@ next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
 
+        removeFirstNChildren(gallery, countPage);
+
         getImages()
             .then(response => render(response.data))
             .catch(error => getError(error));
+        
+        lightbox.refresh();
     } else if (!messEndSearchResult) {
         messEndSearchResult = true;
 
