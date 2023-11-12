@@ -15,6 +15,8 @@ const prev = document.querySelector('.prev');
 
 const next = document.querySelector('.next');
 
+const buttonsNumbers = document.querySelector('.buttons-numbers');
+
 const backToTop = document.querySelector('.back-to-top');
 backToTop.hidden = true;
 
@@ -108,6 +110,8 @@ const render = items => {
         gallery.insertAdjacentHTML("beforeend", markup);
 
         lightbox.refresh();
+
+        renderButtons(items);
     };
 
     if (items.totalHits <= countPage) {
@@ -132,6 +136,50 @@ const getError = error => {
     error = Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
 
     pagination.classList.add("visually-hidden")
+};
+
+const renderButtons = bth => {
+    maxPages = Math.ceil(bth.totalHits / countPage);
+
+    let arrBth = [];
+
+    for (let i = 0; i < maxPages; i += 1) {
+        arrBth.push(i + 1);
+    };
+
+    buttonsNumbers.innerHTML = "";
+
+    arrBth.forEach(bthNum => {
+        const button = document.createElement("button");
+        button.classList.add("bth-num");
+        button.textContent = bthNum;
+
+        buttonsNumbers.appendChild(button);
+
+        button.addEventListener("click", () => {
+            page = bthNum;
+
+            removeFirstNChildren(gallery, countPage);
+
+            getImages()
+                .then(response => render(response.data))
+                .catch(error => getError(error));
+            
+            lightbox.refresh();
+
+            if (page === 1) {
+                prev.classList.add("visually-hidden");
+            } else {
+                prev.classList.remove("visually-hidden");
+            };
+
+            if (page === maxPages) {
+                next.classList.add("visually-hidden");
+            } else {
+                next.classList.remove("visually-hidden");
+            };
+        });
+    });
 };
 
 prev.addEventListener("click", () => {
