@@ -55,7 +55,7 @@ const getImages = async () => {
 form.addEventListener("submit", event => {
     event.preventDefault();
 
-    removeChildren(gallery, event.totalHits);
+    removeChildren(gallery);
 
     page = 1;
     messEndSearchResult = false;
@@ -75,7 +75,7 @@ const render = items => {
 
     if (items.hits.length === 0) {
         return getError(error);
-    }
+    };
 
     Notiflix.Notify.success(`Hooray! We found ${items.totalHits} images.`);
 
@@ -108,15 +108,19 @@ const render = items => {
         gallery.insertAdjacentHTML("beforeend", markup);
 
         lightbox.refresh();
-    }
+    };
 
-    pagination.classList.remove("visually-hidden");
+    if (items.totalHits <= countPage) {
+        pagination.classList.add("visually-hidden");
+    } else {
+        pagination.classList.remove("visually-hidden");
+    };
 };
 
-const removeChildren = (container, count) => {
-    for (let i = 0; i < count; i += 1) {
-        container.lastElementChild.remove();
-  }
+const removeChildren = container => {
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    };
 };
 
 const removeFirstNChildren = (container, count) => {
