@@ -110,13 +110,27 @@ a {
   height: 32px;
 }
 
-.bth-num {
-  background-color: lightskyblue;
-  color: white;
+.buttons-number {
+  background-color: transparent;
   border: none;
+}
+
+.bth-num {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  background-color: white;
+  color: lightskyblue;
+  border: lightskyblue solid 1px;
   border-radius: 50%;
   width: 32px;
   height: 32px;
+}
+
+.bth-num:active {
+  background-color: lightskyblue;
+  color: white;
+  border: none;
 }
 
 .back-to-top {
