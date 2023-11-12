@@ -9,6 +9,7 @@ const searchInput = document.querySelector('input[name="searchQuery"]');
 const gallery = document.querySelector('.gallery');
 
 const pagination = document.querySelector(".pagination");
+pagination.classList.add("visually-hidden");
 
 const prev = document.querySelector('.prev');
 
@@ -110,13 +111,10 @@ const render = items => {
 
         lightbox.refresh();
 
-        renderButtons(items);
+        // renderButtons(items);
     }
 
-    pagination.style.display = "flex";
-    pagination.style.flexDirection = "row";
-    pagination.style.justifyContent = "center";
-    pagination.style.alignItems = "center";
+    pagination.classList.remove("visually-hidden");
 };
 
 const removeChildren = container => {
@@ -128,52 +126,57 @@ const removeChildren = container => {
 const getError = error => {
     error = Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
 
-    pagination.style.display = "none";
+    pagination.classList.add("visually-hidden")
 };
 
-const renderButtons = items => {
-    maxPages = Math.ceil(items.totalHits / countPage);
+// const renderButtons = items => {
+//     maxPages = Math.ceil(items.totalHits / countPage);
 
-    let arrayButtons = [];
+//     let arrayButtons = [];
 
-    for (let i = 0; i < maxPages; i += 1) {
-        arrayButtons.push(i + 1);
-    }
+//     for (let i = 0; i < maxPages; i += 1) {
+//         arrayButtons.push(i + 1);
+//     }
 
-    bthNum.innerHTML = "";
+//     bthNum.innerHTML = "";
 
-    arrayButtons.forEach(pageNumber => {
-        const button = document.createElement("button");
-        button.classList.add("bth-num")
-        button.textContent = pageNumber;
+//     arrayButtons.forEach(pageNumber => {
+//         const button = document.createElement("button");
+//         button.classList.add("bth-num")
+//         button.textContent = pageNumber;
 
-        button.addEventListener("click", () => {
-            countPage = pageNumber * 40 - gallery.childElementCount;
-            console.log(countPage);
+//         button.addEventListener("click", () => {
+//             page = pageNumber;
 
-            getImages()
-                .then(response => render(response.data))
-                .catch(error => getError(error));
+//             countPage = page * 40 - gallery.childElementCount;
+
+//             getImages()
+//                 .then(response => render(response.data))
+//                 .catch(error => getError(error));
             
-            countPage = 40;
-        });
+//             countPage = 40;
+//         });
 
-        bthNum.appendChild(button);
-    });
-};
+//         bthNum.appendChild(button);
+//     });
+// };
 
 prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
 
-        getImages()
-            .then(response => render(response.data))
-            .catch(error => getError(error));
+        for (let i = 0; i < countPage; i += 1) {
+            gallery.lastElementChild.remove();
+        };
+
+        lightbox.refresh();
     } else {
         Notiflix.Notify.info("You're at the beginning of the search results.");
         
-        prev.style.display = "none"; 
+        prev.classList.add("visually-hidden") 
     };
+
+    next.classList.remove("visually-hidden");
 });
 
 next.addEventListener("click", () => {
@@ -183,15 +186,15 @@ next.addEventListener("click", () => {
         getImages()
             .then(response => render(response.data))
             .catch(error => getError(error));
-    } else {
-        if (!messEndSearchResult) {
-            messEndSearchResult = true;
+    } else if (!messEndSearchResult) {
+        messEndSearchResult = true;
 
-            Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-            next.style.display = "none";
-        }
-    }
+        next.classList.add("visually-hidden");
+    };
+    
+    prev.classList.remove("visually-hidden");
 });
 
 (() => {
@@ -200,7 +203,7 @@ next.addEventListener("click", () => {
             backToTop.hidden = false;
         } else {
             backToTop.hidden = true;
-        }
+        };
     });
 
     backToTop.addEventListener("click", () => {
