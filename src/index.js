@@ -63,7 +63,7 @@ form.addEventListener("submit", event => {
     if (searchInput.value.trim().length === 0) {
         Notiflix.Notify.failure("The search field must be filled!");
         return;
-    }
+    };
 
     getImages()
         .then(response => render(response.data))
@@ -123,6 +123,11 @@ const removeChildren = container => {
     };
 };
 
+const removeFirstNChildren = (container, count) => {
+    const children = Array.from(container.querySelectorAll(".photo-card")).slice(0, count);
+    children.forEach(child => container.removeChild(child));
+};
+
 const getError = error => {
     error = Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
 
@@ -132,6 +137,8 @@ const getError = error => {
 prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
+
+        removeFirstNChildren(gallery, countPage);
 
         getImages()
             .then(response => render(response.data))
@@ -150,6 +157,8 @@ prev.addEventListener("click", () => {
 next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
+
+        removeFirstNChildren(gallery, countPage);
 
         getImages()
             .then(response => render(response.data))
