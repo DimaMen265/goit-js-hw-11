@@ -15,6 +15,10 @@ const prev = document.querySelector('.prev');
 
 const next = document.querySelector('.next');
 
+const doublePrev = document.querySelector('.double-prev');
+
+const doubleNext = document.querySelector('.double-next');
+
 const buttonsNumbers = document.querySelector('.buttons-numbers');
 
 const backToTop = document.querySelector('.back-to-top');
@@ -152,11 +156,23 @@ const renderButtons = bth => {
     arrBth.forEach(bthNum => {
         const button = document.createElement("button");
         button.classList.add("bth-num");
+        button.classList.add("visually-hidden");
         button.textContent = bthNum;
+
+        let activeButton = null;
+
+        if (bthNum === page) {
+            button.classList.add("active");
+            activeButton = button;
+        };
 
         buttonsNumbers.appendChild(button);
 
         button.addEventListener("click", () => {
+            if (activeButton) {
+                activeButton.classList.remove("active")
+            };
+
             page = bthNum;
 
             removeFirstNChildren(gallery, countPage);
@@ -169,16 +185,46 @@ const renderButtons = bth => {
 
             if (page === 1) {
                 prev.classList.add("visually-hidden");
+
+                doublePrev.classList.add("visually-hidden");
             } else {
                 prev.classList.remove("visually-hidden");
+
+                doublePrev.classList.remove("visually-hidden");
             };
 
             if (page === maxPages) {
                 next.classList.add("visually-hidden");
+
+                doubleNext.classList.add("visually-hidden");
             } else {
                 next.classList.remove("visually-hidden");
+
+                doubleNext.classList.remove("visually-hidden");
             };
+
+            button.classList.add("active");
+            activeButton = button;
+
+            updateButtonsVisibility();
         });
+    });
+
+    updateButtonsVisibility();
+};
+
+const updateButtonsVisibility = () => {
+    const allButtons = document.querySelectorAll('.bth-num');
+
+    allButtons.forEach((button, index) => {
+        const isFirstButton = index === 0;
+        const isLastButton = index === allButtons.length - 1;
+
+        if (isFirstButton || isLastButton || index + 1 === page || index + 2 === page || index === page) {
+            button.classList.remove("visually-hidden");
+        } else {
+            button.classList.add("visually-hidden");
+        }
     });
 };
 
@@ -200,6 +246,8 @@ prev.addEventListener("click", () => {
     };
 
     next.classList.remove("visually-hidden");
+
+    doubleNext.classList.remove("visually-hidden");
 });
 
 next.addEventListener("click", () => {
@@ -222,6 +270,54 @@ next.addEventListener("click", () => {
     };
     
     prev.classList.remove("visually-hidden");
+
+    doublePrev.classList.remove("visually-hidden");
+});
+
+doublePrev.addEventListener("click", () => {
+    page = 1;
+
+    removeFirstNChildren(gallery, countPage);
+
+    getImages()
+        .then(response => render(response.data))
+        .catch(error => getError(error));
+
+    lightbox.refresh();
+
+    Notiflix.Notify.info("You're at the beginning of the search results.");
+
+    prev.classList.add("visually-hidden");
+    next.classList.remove("visually-hidden");
+
+    doublePrev.classList.add("visually-hidden");
+    doubleNext.classList.remove("visually-hidden");
+});
+
+doubleNext.addEventListener("click", () => {
+    page = maxPages;
+
+    removeFirstNChildren(gallery, countPage);
+
+    getImages()
+        .then(response => render(response.data))
+        .catch(error => getError(error));
+
+    lightbox.refresh();
+
+    if (!messEndSearchResult) {
+        messEndSearchResult = true;
+
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+
+        next.classList.add("visually-hidden");
+
+        doubleNext.classList.add("visually-hidden");
+    };
+
+    prev.classList.remove("visually-hidden");
+
+    doublePrev.classList.remove("visually-hidden");
 });
 
 (() => {
