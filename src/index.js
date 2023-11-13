@@ -184,23 +184,23 @@ const renderButtons = bth => {
             lightbox.refresh();
 
             if (page === 1) {
-                prev.classList.add("visually-hidden");
+                Notiflix.Notify.info("You're at the beginning of the search results.");
 
-                doublePrev.classList.add("visually-hidden");
+                prev.disabled = true;
+                doublePrev.disabled = true;
             } else {
-                prev.classList.remove("visually-hidden");
-
-                doublePrev.classList.remove("visually-hidden");
+                prev.disabled = false;
+                doublePrev.disabled = false;
             };
 
             if (page === maxPages) {
-                next.classList.add("visually-hidden");
+                Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-                doubleNext.classList.add("visually-hidden");
+                next.disabled = true;
+                doubleNext.disabled = true;
             } else {
-                next.classList.remove("visually-hidden");
-
-                doubleNext.classList.remove("visually-hidden");
+                next.disabled = false;
+                doubleNext.disabled = false;
             };
 
             button.classList.add("active");
@@ -215,16 +215,23 @@ const renderButtons = bth => {
 
 const updateButtonsVisibility = () => {
     const allButtons = document.querySelectorAll('.bth-num');
+    const mediaQuery600 = window.matchMedia("(max-width: 600px)");
 
     allButtons.forEach((button, index) => {
         const isFirstButton = index === 0;
         const isLastButton = index === allButtons.length - 1;
 
-        if (isFirstButton || isLastButton || index + 1 === page || index + 2 === page || index === page) {
-            button.classList.remove("visually-hidden");
+        if (mediaQuery600.matches) {
+            if (index + 1 === page || index + 2 === page || index === page) {
+                button.classList.remove("visually-hidden");
+            }
         } else {
-            button.classList.add("visually-hidden");
-        }
+            if (isFirstButton || isLastButton || index + 1 === page || index + 2 === page || index === page) {
+                button.classList.remove("visually-hidden");
+            } else {
+                button.classList.add("visually-hidden");
+            }
+        };
     });
 };
 
@@ -242,12 +249,12 @@ prev.addEventListener("click", () => {
     } else {
         Notiflix.Notify.info("You're at the beginning of the search results.");
         
-        prev.classList.add("visually-hidden") 
+        prev.disabled = true;
+        doublePrev.disabled = true;
     };
 
-    next.classList.remove("visually-hidden");
-
-    doubleNext.classList.remove("visually-hidden");
+    next.disabled = false;
+    doubleNext.disabled = false;
 });
 
 next.addEventListener("click", () => {
@@ -266,12 +273,12 @@ next.addEventListener("click", () => {
 
         Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-        next.classList.add("visually-hidden");
+        next.disabled = true;
+        doubleNext.disabled = true;
     };
     
-    prev.classList.remove("visually-hidden");
-
-    doublePrev.classList.remove("visually-hidden");
+    prev.disabled = false;
+    doublePrev.disabled = false;
 });
 
 doublePrev.addEventListener("click", () => {
@@ -287,11 +294,11 @@ doublePrev.addEventListener("click", () => {
 
     Notiflix.Notify.info("You're at the beginning of the search results.");
 
-    prev.classList.add("visually-hidden");
-    next.classList.remove("visually-hidden");
+    prev.disabled = true;
+    next.disabled = false;
 
-    doublePrev.classList.add("visually-hidden");
-    doubleNext.classList.remove("visually-hidden");
+    doublePrev.disabled = true;
+    doubleNext.disabled = false;
 });
 
 doubleNext.addEventListener("click", () => {
@@ -310,14 +317,12 @@ doubleNext.addEventListener("click", () => {
 
         Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-        next.classList.add("visually-hidden");
-
-        doubleNext.classList.add("visually-hidden");
+        next.disabled = true;
+        doubleNext.disabled = true;
     };
 
-    prev.classList.remove("visually-hidden");
-
-    doublePrev.classList.remove("visually-hidden");
+    prev.disabled = false;
+    doublePrev.disabled = false;
 });
 
 (() => {
