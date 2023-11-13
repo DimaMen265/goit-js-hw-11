@@ -95,9 +95,34 @@ a {
   background-color: lightskyblue;
   color: white;
   border: none;
-  border-radius: 4px;
-  width: 64px;
+  border-radius: 50%;
+  width: 32px;
   height: 32px;
+  position: relative;
+}
+
+.icon-left {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+}
+
+.icon-right {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+}
+
+.icon-double-left {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+}
+
+.icon-double-right {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
 }
 
 .prev {
@@ -165,7 +190,7 @@ a {
   bottom: 32px;
 }
 
-.back-to-top > img {
+.back-to-top > svg {
   position: absolute;
   left: 25%;
   bottom: 25%;
