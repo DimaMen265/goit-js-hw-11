@@ -80,79 +80,47 @@ form.addEventListener("submit", event => {
         .catch(error => getError(error));
 });
 
-const showLoader = () => {
-    const loaderElements = document.querySelectorAll(".loader");
-    loaderElements.forEach(loader => loader.classList.add("visually-hidden"));
-};
-
-const hideLoader = () => {
-    const loaderElements = document.querySelectorAll(".loader");
-    loaderElements.forEach(loader => loader.classList.remove("visually-hidden"));
-};
-
 const render = items => {
-    showLoader();
-
     maxPages = Math.ceil(items.totalHits / countPage);
 
     if (items.hits.length === 0) {
-        hideLoader();
         return getError(error);
-    }
+    };
 
     Notiflix.Notify.success(`Hooray! We found ${items.totalHits} images.`);
 
-    const loadCount = items.hits.length;
-    let loadedImages = 0;
-
-    items.hits.forEach(item => {
-        const img = new Image();
-        img.src = item.webformatURL;
-
-        img.addEventListener('load', () => {
-            loadedImages += 1;
-
-            const markup = `<a class="photo-card" href="${item.largeImageURL}">
+    if (items.totalHits > 0) {
+        const markup = items.hits
+            .map(item => {
+                return `<a class="photo-card" href="${item.largeImageURL}">
                 <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" />
-                <span class="loader"></span>
                 <div class="info">
-                    <p class="info-item">
-                        <b>Likes</b>
-                        ${item.likes}
-                    </p>
-                    <p class="info-item">
-                        <b>Views</b>
-                        ${item.views}
-                    </p>
-                    <p class="info-item">
-                        <b>Comments</b>
-                        ${item.comments}
-                    </p>
-                    <p class="info-item">
-                        <b>Downloads</b>
-                        ${item.downloads}
-                    </p>
+                <p class="info-item">
+                <b>Likes</b>
+                ${item.likes}
+                </p>
+                <p class="info-item">
+                <b>Views</b>
+                ${item.views}
+                </p>
+                <p class="info-item">
+                <b>Comments</b>
+                ${item.comments}
+                </p>
+                <p class="info-item">
+                <b>Downloads</b>
+                ${item.downloads}
+                </p>
                 </div>
-            </a>`;
+                </a>`;
+            }).join("");
 
-            gallery.insertAdjacentHTML("beforeend", markup);
-            lightbox.refresh();
+        gallery.insertAdjacentHTML("beforeend", markup);
 
-            if (loadedImages === loadCount) {
-                hideLoader();
-            }
-        });
+        lightbox.refresh();
 
-        img.addEventListener('error', () => {
-            loadedImages += 1;
-            if (loadedImages === loadCount) {
-                hideLoader();
-            }
-            getError(error);
-        });
-    });
-
-    renderButtons(items);
+        renderButtons(items);
+    };
 
     if (items.totalHits <= countPage) {
         pagination.classList.add("visually-hidden");
