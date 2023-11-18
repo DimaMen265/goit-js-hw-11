@@ -42,7 +42,6 @@ const optionsGallery = {
 const lightbox = new simpleLightbox(".gallery a", optionsGallery);
 
 const getImages = async () => {
-    showLoader();
 
     const paramsObject = {
         key: "40222608-3820d97c8748fab8cb367624f",
@@ -58,10 +57,8 @@ const getImages = async () => {
 
     try {
         const response = await axios.get(`https://pixabay.com/api/?${params}`);
-        hideLoader();
         return response;
     } catch (error) {
-        hideLoader();
         getError(error);
     }
 };
@@ -69,23 +66,17 @@ const getImages = async () => {
 form.addEventListener("submit", event => {
     event.preventDefault();
 
-    showLoader();
-
     removeChildren(gallery);
 
     page = 1;
 
     if (searchInput.value.trim().length === 0) {
-        hideLoader();
         Notiflix.Notify.failure("The search field must be filled!");
         return;
     };
 
     getImages()
-        .then(response => {
-            render(response.data);
-            hideLoader();
-        })
+        .then(response => render(response.data))
         .catch(error => getError(error));
 });
 
@@ -100,47 +91,68 @@ const hideLoader = () => {
 };
 
 const render = items => {
+    showLoader();
+
     maxPages = Math.ceil(items.totalHits / countPage);
 
     if (items.hits.length === 0) {
+        hideLoader();
         return getError(error);
-    };
+    }
 
     Notiflix.Notify.success(`Hooray! We found ${items.totalHits} images.`);
 
-    if (items.totalHits > 0) {
-        const markup = items.hits
-            .map(item => {
-                return `<a class="photo-card" href="${item.largeImageURL}">
+    const loadCount = items.hits.length;
+    let loadedImages = 0;
+
+    items.hits.forEach(item => {
+        const img = new Image();
+        img.src = item.webformatURL;
+
+        img.addEventListener('load', () => {
+            loadedImages += 1;
+
+            const markup = `<a class="photo-card" href="${item.largeImageURL}">
                 <img src="${item.webformatURL}" alt="${item.tags}" loading="lazy" />
-                <div class="info">
-                <p class="info-item">
-                <b>Likes</b>
-                ${item.likes}
-                </p>
-                <p class="info-item">
-                <b>Views</b>
-                ${item.views}
-                </p>
-                <p class="info-item">
-                <b>Comments</b>
-                ${item.comments}
-                </p>
-                <p class="info-item">
-                <b>Downloads</b>
-                ${item.downloads}
-                </p>
-                </div>
                 <span class="loader"></span>
-                </a>`;
-            }).join("");
+                <div class="info">
+                    <p class="info-item">
+                        <b>Likes</b>
+                        ${item.likes}
+                    </p>
+                    <p class="info-item">
+                        <b>Views</b>
+                        ${item.views}
+                    </p>
+                    <p class="info-item">
+                        <b>Comments</b>
+                        ${item.comments}
+                    </p>
+                    <p class="info-item">
+                        <b>Downloads</b>
+                        ${item.downloads}
+                    </p>
+                </div>
+            </a>`;
 
-        gallery.insertAdjacentHTML("beforeend", markup);
+            gallery.insertAdjacentHTML("beforeend", markup);
+            lightbox.refresh();
 
-        lightbox.refresh();
+            if (loadedImages === loadCount) {
+                hideLoader();
+            }
+        });
 
-        renderButtons(items);
-    };
+        img.addEventListener('error', () => {
+            loadedImages += 1;
+            if (loadedImages === loadCount) {
+                hideLoader();
+            }
+            getError(error);
+        });
+    });
+
+    renderButtons(items);
 
     if (items.totalHits <= countPage) {
         pagination.classList.add("visually-hidden");
@@ -155,8 +167,6 @@ const render = items => {
         doublePrev.classList.remove("visually-hidden");
         doubleNext.classList.remove("visually-hidden");
     };
-
-    hideLoader();
 };
 
 const removeChildren = container => {
@@ -193,15 +203,10 @@ const renderButtons = bth => {
         button.addEventListener("click", () => {
             page = bthNum;
 
-            showLoader();
-
             removeChildren(gallery);
 
             getImages()
-                .then(response => {
-                    render(response.data);
-                    hideLoader();
-                })
+                .then(response => render(response.data))
                 .catch(error => getError(error));
             
             lightbox.refresh();
@@ -280,15 +285,10 @@ prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
 
-        showLoader();
-
         removeChildren(gallery);
 
         getImages()
-            .then(response => {
-                render(response.data);
-                hideLoader();
-            })
+            .then(response => render(response.data))
             .catch(error => getError(error));
 
         lightbox.refresh();
@@ -309,15 +309,10 @@ next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
 
-        showLoader();
-
         removeChildren(gallery);
 
         getImages()
-            .then(response => {
-                render(response.data);
-                hideLoader();
-            })
+            .then(response => render(response.data))
             .catch(error => getError(error));
         
         lightbox.refresh();
@@ -337,15 +332,10 @@ next.addEventListener("click", () => {
 doublePrev.addEventListener("click", () => {
     page = 1;
 
-    showLoader();
-
     removeChildren(gallery);
 
     getImages()
-        .then(response => {
-            render(response.data);
-            hideLoader();
-        })
+        .then(response => render(response.data))
         .catch(error => getError(error));
 
     lightbox.refresh();
@@ -362,15 +352,10 @@ doublePrev.addEventListener("click", () => {
 doubleNext.addEventListener("click", () => {
     page = maxPages;
 
-    showLoader();
-
     removeChildren(gallery);
 
     getImages()
-        .then(response => {
-            render(response.data);
-            hideLoader();
-        })
+        .then(response => render(response.data))
         .catch(error => getError(error));
 
     lightbox.refresh();
