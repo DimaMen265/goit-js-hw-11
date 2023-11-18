@@ -75,6 +75,11 @@ form.addEventListener("submit", event => {
         return;
     };
 
+    if (next.disabled || doubleNext.disabled) {
+        next.disabled = false;
+        doubleNext.disabled = false;
+    };
+
     getImages()
         .then(response => render(response.data))
         .catch(error => getError(error));
