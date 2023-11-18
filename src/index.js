@@ -42,6 +42,8 @@ const optionsGallery = {
 const lightbox = new simpleLightbox(".gallery a", optionsGallery);
 
 const getImages = async () => {
+    showLoader();
+
     const paramsObject = {
         key: "40222608-3820d97c8748fab8cb367624f",
         q: searchInput.value.trim(),
@@ -54,25 +56,48 @@ const getImages = async () => {
 
     const params = new URLSearchParams(paramsObject);
 
-    return await axios.get(`https://pixabay.com/api/?${params}`);
+    try {
+        const response = await axios.get(`https://pixabay.com/api/?${params}`);
+        hideLoader();
+        return response;
+    } catch (error) {
+        hideLoader();
+        getError(error);
+    }
 };
 
 form.addEventListener("submit", event => {
     event.preventDefault();
+
+    showLoader();
 
     removeChildren(gallery);
 
     page = 1;
 
     if (searchInput.value.trim().length === 0) {
+        hideLoader();
         Notiflix.Notify.failure("The search field must be filled!");
         return;
     };
 
     getImages()
-        .then(response => render(response.data))
+        .then(response => {
+            render(response.data);
+            hideLoader();
+        })
         .catch(error => getError(error));
 });
+
+const showLoader = () => {
+    const loaderElements = document.querySelectorAll(".loader");
+    loaderElements.forEach(loader => loader.classList.add("visually-hidden"));
+};
+
+const hideLoader = () => {
+    const loaderElements = document.querySelectorAll(".loader");
+    loaderElements.forEach(loader => loader.classList.remove("visually-hidden"));
+};
 
 const render = items => {
     maxPages = Math.ceil(items.totalHits / countPage);
@@ -106,6 +131,7 @@ const render = items => {
                 ${item.downloads}
                 </p>
                 </div>
+                <span class="loader"></span>
                 </a>`;
             }).join("");
 
@@ -129,6 +155,8 @@ const render = items => {
         doublePrev.classList.remove("visually-hidden");
         doubleNext.classList.remove("visually-hidden");
     };
+
+    hideLoader();
 };
 
 const removeChildren = container => {
@@ -165,10 +193,15 @@ const renderButtons = bth => {
         button.addEventListener("click", () => {
             page = bthNum;
 
+            showLoader();
+
             removeChildren(gallery);
 
             getImages()
-                .then(response => render(response.data))
+                .then(response => {
+                    render(response.data);
+                    hideLoader();
+                })
                 .catch(error => getError(error));
             
             lightbox.refresh();
@@ -247,10 +280,15 @@ prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
 
+        showLoader();
+
         removeChildren(gallery);
 
         getImages()
-            .then(response => render(response.data))
+            .then(response => {
+                render(response.data);
+                hideLoader();
+            })
             .catch(error => getError(error));
 
         lightbox.refresh();
@@ -271,10 +309,15 @@ next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
 
+        showLoader();
+
         removeChildren(gallery);
 
         getImages()
-            .then(response => render(response.data))
+            .then(response => {
+                render(response.data);
+                hideLoader();
+            })
             .catch(error => getError(error));
         
         lightbox.refresh();
@@ -294,10 +337,15 @@ next.addEventListener("click", () => {
 doublePrev.addEventListener("click", () => {
     page = 1;
 
+    showLoader();
+
     removeChildren(gallery);
 
     getImages()
-        .then(response => render(response.data))
+        .then(response => {
+            render(response.data);
+            hideLoader();
+        })
         .catch(error => getError(error));
 
     lightbox.refresh();
@@ -314,10 +362,15 @@ doublePrev.addEventListener("click", () => {
 doubleNext.addEventListener("click", () => {
     page = maxPages;
 
+    showLoader();
+
     removeChildren(gallery);
 
     getImages()
-        .then(response => render(response.data))
+        .then(response => {
+            render(response.data);
+            hideLoader();
+        })
         .catch(error => getError(error));
 
     lightbox.refresh();
