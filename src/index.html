@@ -4,53 +4,66 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Homework 11</title>
+    <title>Mini Pinterest</title>
+    <link rel="icon" type="image/svg+xml" href="./images/logo.svg" />
     <link rel="stylesheet" href="common.css" />
   </head>
   <body>
-    <form class="search-form" id="search-form">
-      <input
-        type="text"
-        name="searchQuery"
-        autocomplete="off"
-        placeholder="Search images..."
-        class="search-input"
-      />
+    <header>
+      <p class="title">Mini Pinterest</p>
 
-      <button type="submit" class="search-button">
-        <img src="./images/search.svg" alt="Search mark" />
-      </button>
-    </form>
+      <form class="search-form" id="search-form">
+        <input
+          type="text"
+          name="searchQuery"
+          autocomplete="off"
+          placeholder="Search images..."
+          class="search-input"
+        />
 
-    <div class="gallery"></div>
+        <button type="submit" class="search-button">
+          <svg width="16" height="16" class="icon-search">
+            <use href="./images/icons.svg#icon-search"></use>
+          </svg>
+        </button>
+      </form>
 
-    <div class="pagination">
-      <button type="button" class="double-prev buttons-pagination">
-        <svg width="24" height="24" class="icon-double-left">
-          <use href="./images/icons.svg#icon-arrow-double-left"></use>
-        </svg>
-      </button>
+      <a href="https://www.pinterest.com/" target="_blank" class="pinterest"
+        >Pinterest</a
+      >
+    </header>
 
-      <button type="button" class="prev buttons-pagination">
-        <svg width="24" height="24" class="icon-left">
-          <use href="./images/icons.svg#icon-arrow-left"></use>
-        </svg>
-      </button>
+    <main>
+      <div class="gallery"></div>
 
-      <div class="buttons-numbers"></div>
+      <div class="pagination">
+        <button type="button" class="double-prev buttons-pagination">
+          <svg width="24" height="24" class="icon-double-left">
+            <use href="./images/icons.svg#icon-arrow-double-left"></use>
+          </svg>
+        </button>
 
-      <button type="button" class="next buttons-pagination">
-        <svg width="24" height="24" class="icon-right">
-          <use href="./images/icons.svg#icon-arrow-right"></use>
-        </svg>
-      </button>
+        <button type="button" class="prev buttons-pagination">
+          <svg width="24" height="24" class="icon-left">
+            <use href="./images/icons.svg#icon-arrow-left"></use>
+          </svg>
+        </button>
 
-      <button type="button" class="double-next buttons-pagination">
-        <svg width="24" height="24" class="icon-double-right">
-          <use href="./images/icons.svg#icon-arrow-double-right"></use>
-        </svg>
-      </button>
-    </div>
+        <div class="buttons-numbers"></div>
+
+        <button type="button" class="next buttons-pagination">
+          <svg width="24" height="24" class="icon-right">
+            <use href="./images/icons.svg#icon-arrow-right"></use>
+          </svg>
+        </button>
+
+        <button type="button" class="double-next buttons-pagination">
+          <svg width="24" height="24" class="icon-double-right">
+            <use href="./images/icons.svg#icon-arrow-double-right"></use>
+          </svg>
+        </button>
+      </div>
+    </main>
 
     <button type="button" class="back-to-top" id="back-to-up">
       <svg width="24" height="24">

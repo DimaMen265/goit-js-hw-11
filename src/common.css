@@ -1,5 +1,5 @@
 body {
-  padding: 0 0 16px;
+  padding: 0;
   margin: 0;
 }
 
@@ -11,6 +11,14 @@ img {
 a {
   text-decoration: none;
   color: black;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  padding: 0;
 }
 
 .visually-hidden {
@@ -28,31 +36,76 @@ a {
   outline-offset: 0;
 }
 
-.search-form {
-  padding: 8px;
-  margin-bottom: 16px;
+header {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   background-color: cornflowerblue;
+  padding: 16px 8px;
+}
+
+.title,
+.pinterest {
+  display: block;
+  margin: auto 0;
+  color: white;
+  font-style: oblique;
+  font-weight: 700;
+  font-size: 20px;
+  text-align: center;
+}
+
+.pinterest {
+  transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pinterest:hover,
+.pinterest:active {
+  color: lightskyblue;
+}
+
+.search-form {
+  display: flex;
 }
 
 .search-input {
   padding: 4px 8px;
-  border: none;
+  border: 1px solid lightskyblue;
   border-radius: 4px 0 0 4px;
   outline: transparent;
   resize: none;
 }
 
 .search-button {
-  background-color: lightskyblue;
-  padding: 4px 8px;
-  border: none;
+  background-color: white;
+  border: 1px solid lightskyblue;
   border-radius: 0 4px 4px 0;
+  width: 32px;
+  height: initial;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    border 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-button:hover,
+.search-button:active {
+  background-color: lightskyblue;
+  border: none;
+}
+
+.icon-search {
+  fill: lightskyblue;
+}
+
+.icon-search:hover,
+.icon-search:active {
+  fill: white;
+}
+
+main {
+  padding: 16px 8px;
 }
 
 .gallery {
-  padding: 0 16px 16px;
+  margin-bottom: 16px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -92,13 +145,18 @@ a {
 }
 
 .buttons-pagination {
-  background-color: lightskyblue;
-  color: white;
+  background-color: cornflowerblue;
   border: none;
   border-radius: 50%;
   width: 32px;
   height: 32px;
   position: relative;
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.buttons-pagination:hover,
+.buttons-pagination:active {
+  box-shadow: 0 0 0 5px rgba(100, 149, 237, 0.3);
 }
 
 .icon-left {
@@ -144,36 +202,28 @@ a {
 .buttons-numbers {
   display: flex;
   flex-direction: row;
+  gap: 8px;
 }
 
 .bth-num {
-  margin-right: 10px;
   background-color: white;
-  color: lightskyblue;
-  border: lightskyblue solid 1px;
+  color: cornflowerblue;
+  border: 1px solid cornflowerblue;
   border-radius: 50%;
   width: 32px;
   height: 32px;
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.bth-num:last-child {
-  margin-right: 0;
+.bth-num:hover,
+.bth-num:active {
+  box-shadow: 0 0 0 5px rgba(100, 149, 237, 0.3);
 }
 
 .active {
-  background-color: lightskyblue;
+  background-color: cornflowerblue;
   color: white;
   border: none;
-}
-
-.dots {
-  margin-right: 10px;
-  background-color: white;
-  color: lightskyblue;
-  border: lightskyblue solid 1px;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
 }
 
 .back-to-top {
@@ -188,6 +238,12 @@ a {
   position: fixed;
   right: 32px;
   bottom: 32px;
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.back-to-top:hover,
+.back-to-top:active {
+  box-shadow: 0 0 0 5px rgba(100, 149, 237, 0.3);
 }
 
 .back-to-top > svg {

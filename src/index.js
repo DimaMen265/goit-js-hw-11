@@ -27,7 +27,6 @@ backToTop.hidden = true;
 let countPage = 40;
 let page = 1;
 let maxPages = page;
-let messEndSearchResult = false;
 
 const optionsGallery = {
     sourceAttr: "href",
@@ -123,17 +122,20 @@ const render = items => {
     } else {
         pagination.classList.remove("visually-hidden");
     };
+
+    if (maxPages <= 2) {
+        doublePrev.classList.add("visually-hidden");
+        doubleNext.classList.add("visually-hidden");
+    } else {
+        doublePrev.classList.remove("visually-hidden");
+        doubleNext.classList.remove("visually-hidden");
+    };
 };
 
 const removeChildren = container => {
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     };
-};
-
-const removeFirstNChildren = (container, count) => {
-    const children = Array.from(container.querySelectorAll(".photo-card")).slice(0, count);
-    children.forEach(child => container.removeChild(child));
 };
 
 const getError = error => {
@@ -159,23 +161,12 @@ const renderButtons = bth => {
         button.classList.add("visually-hidden");
         button.textContent = bthNum;
 
-        let activeButton = null;
-
-        if (bthNum === page) {
-            button.classList.add("active");
-            activeButton = button;
-        };
-
         buttonsNumbers.appendChild(button);
 
         button.addEventListener("click", () => {
-            if (activeButton) {
-                activeButton.classList.remove("active")
-            };
-
             page = bthNum;
 
-            removeFirstNChildren(gallery, countPage);
+            removeChildren(gallery);
 
             getImages()
                 .then(response => render(response.data))
@@ -202,35 +193,53 @@ const renderButtons = bth => {
                 next.disabled = false;
                 doubleNext.disabled = false;
             };
-
-            button.classList.add("active");
-            activeButton = button;
-
+            
+            updateActiveClass();
             updateButtonsVisibility();
         });
     });
 
+    updateActiveClass();
     updateButtonsVisibility();
+};
+
+const updateActiveClass = () => {
+    const allButtons = document.querySelectorAll('.bth-num');
+
+    allButtons.forEach((button, index) => {
+        const isActivePage = index + 1 === page;
+        if (isActivePage) {
+            button.classList.add("active");
+            button.disabled = true;
+        } else {
+            button.classList.remove("active");
+            button.disabled = false;
+        };
+    });
 };
 
 const updateButtonsVisibility = () => {
     const allButtons = document.querySelectorAll('.bth-num');
-    const mediaQuery600 = window.matchMedia("(max-width: 600px)");
-
+    
     allButtons.forEach((button, index) => {
-        const isFirstButton = index === 0;
-        const isLastButton = index === allButtons.length - 1;
-
-        if (mediaQuery600.matches) {
-            if (index + 1 === page || index + 2 === page || index === page) {
-                button.classList.remove("visually-hidden");
-            }
-        } else {
-            if (isFirstButton || isLastButton || index + 1 === page || index + 2 === page || index === page) {
+        if (page === 1) {
+            if (index + 1 <= 3) {
                 button.classList.remove("visually-hidden");
             } else {
                 button.classList.add("visually-hidden");
-            }
+            };
+        } else if (page === maxPages) {
+            if (index + 1 > maxPages - 3) {
+                button.classList.remove("visually-hidden");
+            } else {
+                button.classList.add("visually-hidden");
+            };
+        } else {
+            if (index + 1 === page || index + 2 === page || index === page) {
+                button.classList.remove("visually-hidden");
+            } else {
+                button.classList.add("visually-hidden");
+            };
         };
     });
 };
@@ -239,14 +248,16 @@ prev.addEventListener("click", () => {
     if (page > 1) {
         page -= 1;
 
-        removeFirstNChildren(gallery, countPage);
+        removeChildren(gallery);
 
         getImages()
             .then(response => render(response.data))
             .catch(error => getError(error));
 
         lightbox.refresh();
-    } else {
+    };
+
+    if (page === 1) {
         Notiflix.Notify.info("You're at the beginning of the search results.");
         
         prev.disabled = true;
@@ -261,16 +272,16 @@ next.addEventListener("click", () => {
     if (maxPages > page) {
         page += 1;
 
-        removeFirstNChildren(gallery, countPage);
+        removeChildren(gallery);
 
         getImages()
             .then(response => render(response.data))
             .catch(error => getError(error));
         
         lightbox.refresh();
-    } else if (!messEndSearchResult) {
-        messEndSearchResult = true;
+    }
 
+    if (page === maxPages) {
         Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
         next.disabled = true;
@@ -284,7 +295,7 @@ next.addEventListener("click", () => {
 doublePrev.addEventListener("click", () => {
     page = 1;
 
-    removeFirstNChildren(gallery, countPage);
+    removeChildren(gallery);
 
     getImages()
         .then(response => render(response.data))
@@ -304,7 +315,7 @@ doublePrev.addEventListener("click", () => {
 doubleNext.addEventListener("click", () => {
     page = maxPages;
 
-    removeFirstNChildren(gallery, countPage);
+    removeChildren(gallery);
 
     getImages()
         .then(response => render(response.data))
@@ -312,15 +323,11 @@ doubleNext.addEventListener("click", () => {
 
     lightbox.refresh();
 
-    if (!messEndSearchResult) {
-        messEndSearchResult = true;
+    Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
-        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
-
-        next.disabled = true;
-        doubleNext.disabled = true;
-    };
-
+    next.disabled = true;
+    doubleNext.disabled = true;
+    
     prev.disabled = false;
     doublePrev.disabled = false;
 });
