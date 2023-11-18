@@ -63,7 +63,6 @@ form.addEventListener("submit", event => {
     removeChildren(gallery);
 
     page = 1;
-    messEndSearchResult = false;
 
     if (searchInput.value.trim().length === 0) {
         Notiflix.Notify.failure("The search field must be filled!");
